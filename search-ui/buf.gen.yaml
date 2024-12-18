@@ -1,0 +1,8 @@
+version: v2
+inputs:
+  - directory: "../SearchApi/Protos"
+plugins:
+  - remote: buf.build/bufbuild/es:v1.3.0
+    out: gen
+  - remote: buf.build/bufbuild/connect-es
+    out: ./gen

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "DataLoader";
+
+package load;
+
+import "google/protobuf/timestamp.proto";
+
+message ScrapeTarget {
+  string source = 1;
+  string author = 2;
+  string title = 3;
+  google.protobuf.Timestamp release_date = 4;
+  google.protobuf.Timestamp updated_at = 5;
+  string language = 6;
+  string text_path = 7;
+}

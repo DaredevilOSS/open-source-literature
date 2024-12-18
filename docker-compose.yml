@@ -1,0 +1,54 @@
+﻿services:
+  text-search-api:
+    image: text-search-api
+    build:
+      context: .
+      dockerfile: TextSearchApi/Dockerfile
+
+  text-db-loader:
+    image: text-db-loader
+    build:
+      context: .
+      dockerfile: TextDbLoader/Dockerfile
+
+  text-scraper:
+    image: text-scraper
+    build:
+      context: .
+      dockerfile: TextScraper/Dockerfile
+
+  grpcservice1:
+    image: grpcservice1
+    build:
+      context: .
+      dockerfile: GrpcService1/Dockerfile
+
+  dataloader:
+    image: dataloader
+    build:
+      context: .
+      dockerfile: DataLoader/Dockerfile
+
+  dataloader-1:
+    image: dataloader-1
+    build:
+      context: .
+      dockerfile: DataLoader/Dockerfile
+
+  grpcservice1-1:
+    image: grpcservice1-1
+    build:
+      context: .
+      dockerfile: GrpcService1/Dockerfile
+
+  consoleapp1:
+    image: consoleapp1
+    build:
+      context: .
+      dockerfile: ConsoleApp1/Dockerfile
+
+  externalscrapers:
+    image: externalscrapers
+    build:
+      context: .
+      dockerfile: ExternalScrapers/Dockerfile

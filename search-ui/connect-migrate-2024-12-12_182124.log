@@ -1,0 +1,54 @@
+Scanning with ignorePatterns **/dist/** in /Users/ilanuzan/dev/open-source-literature/search-ui
+sourceFiles: ["eslint.config.mjs","next.config.ts","postcss.config.mjs","tailwind.config.ts","app/layout.tsx","app/page.tsx","app/search.tsx","gen/searcher.ts","gen/searcher_connect.ts","gen/searcher_pb.ts","grpc/client.ts"]
+packageFiles: [{"path":"package.json","pkg":{"name":"search-ui","version":"0.1.0","private":true,"scripts":{"dev":"next dev","build":"next build","start":"next start","lint":"next lint"},"dependencies":{"@bufbuild/buf":"^1.47.2","@bufbuild/connect-web":"^0.13.0","@bufbuild/protobuf":"^2.2.3","@bufbuild/protoc-gen-es":"^2.2.3","next":"15.1.0","react":"^19.0.0","react-dom":"^19.0.0"},"devDependencies":{"@eslint/eslintrc":"^3","@types/node":"^20","@types/react":"^19","@types/react-dom":"^19","eslint":"^9","eslint-config-next":"15.1.0","postcss":"^8","tailwindcss":"^3.4.1","typescript":"^5"}}}]
+lockFiles: ["package-lock.json"]
+bufGenYamlPaths: ["buf.gen.yaml"]
+transform eslint.config.mjs
+skipped
+transform next.config.ts
+skipped
+transform postcss.config.mjs
+skipped
+transform tailwind.config.ts
+skipped
+transform app/layout.tsx
+skipped
+transform app/page.tsx
+skipped
+transform app/search.tsx
+skipped
+transform gen/searcher.ts
+skipped
+transform gen/searcher_connect.ts
+skipped
+transform gen/searcher_pb.ts
+skipped
+transform grpc/client.ts
+modified
+run npm install in .
+exit code: 1
+stdout:
+ 
+stderr:
+ npm error code ERESOLVE
+npm error ERESOLVE unable to resolve dependency tree
+npm error
+npm error While resolving: search-ui@0.1.0
+npm error Found: @bufbuild/protobuf@2.2.3
+npm error node_modules/@bufbuild/protobuf
+npm error   @bufbuild/protobuf@"^2.2.3" from the root project
+npm error
+npm error Could not resolve dependency:
+npm error peer @bufbuild/protobuf@"^1.10.0" from @connectrpc/connect-web@1.6.1
+npm error node_modules/@connectrpc/connect-web
+npm error   @connectrpc/connect-web@"^1.6.0" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error /Users/ilanuzan/.npm/_logs/2024-12-12T18_21_22_654Z-eresolve-report.txt
+npm error A complete log of this run can be found in: /Users/ilanuzan/.npm/_logs/2024-12-12T18_21_22_654Z-debug-0.log
+

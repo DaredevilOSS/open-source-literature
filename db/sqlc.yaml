@@ -1,0 +1,16 @@
+version: "2"
+plugins:
+  - name: csharp
+    wasm:
+      url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.12.3/sqlc-gen-csharp.wasm
+      sha256: 4476276719bd2149c5a908be140b21eabf55225e8289b6e7aee62067f3f50be4
+sql:
+  - schema: "schema.sql"
+    queries: "queries.sql"
+    engine: "postgresql"
+    codegen:
+      - plugin: csharp
+        out: ../QueriesGen
+        options:
+          driver: Npgsql
+          targetFramework: net8.0

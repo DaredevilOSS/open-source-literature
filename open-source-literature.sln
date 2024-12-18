@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+#
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchApi", "SearchApi\SearchApi.csproj", "{CCA43055-1299-44C5-BF2A-4BD26C5CE20D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1311198F-7C39-4672-9B93-0499FF358918}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueriesGen", "QueriesGen\QueriesGen.csproj", "{A69720F3-B10C-41AD-865F-5A9A1B5FE6E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpers", "Helpers\Helpers.csproj", "{D94F3B5C-DB85-4C49-96E8-30536CEE843B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLoader", "DataLoader\DataLoader.csproj", "{D8A04649-4FD9-4877-B5A0-76317A125BF9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CCA43055-1299-44C5-BF2A-4BD26C5CE20D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCA43055-1299-44C5-BF2A-4BD26C5CE20D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCA43055-1299-44C5-BF2A-4BD26C5CE20D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCA43055-1299-44C5-BF2A-4BD26C5CE20D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A69720F3-B10C-41AD-865F-5A9A1B5FE6E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A69720F3-B10C-41AD-865F-5A9A1B5FE6E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A69720F3-B10C-41AD-865F-5A9A1B5FE6E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A69720F3-B10C-41AD-865F-5A9A1B5FE6E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D94F3B5C-DB85-4C49-96E8-30536CEE843B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D94F3B5C-DB85-4C49-96E8-30536CEE843B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D94F3B5C-DB85-4C49-96E8-30536CEE843B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D94F3B5C-DB85-4C49-96E8-30536CEE843B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8A04649-4FD9-4877-B5A0-76317A125BF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8A04649-4FD9-4877-B5A0-76317A125BF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8A04649-4FD9-4877-B5A0-76317A125BF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8A04649-4FD9-4877-B5A0-76317A125BF9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
