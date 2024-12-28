@@ -22,10 +22,12 @@ export const SearchRequest = proto3.makeMessageType(
 export const SearchResult = proto3.makeMessageType(
   "search.SearchResult",
   () => [
-    { no: 1, name: "author", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 3, name: "url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 4, name: "matches", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+    { no: 1, name: "id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 2, name: "text_id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 3, name: "source", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "author", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 6, name: "matches", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
 

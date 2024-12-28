@@ -1,66 +1,87 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import runSearch from "../grpc/client";
-import {SearchRequest, SearchResult} from "@/gen/searcher_pb";
+import {SearchRequest, SearchResponse, SearchResult} from "@/gen/searcher_pb";
 
-export default function Search() {
-    const [query, setQuery] = useState('');
-    const [results, setResults] = useState<string[]>([]);
-    const [loading, setLoading] = useState(false);
+const Search: React.FC = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredData, setFilteredData] = useState<SearchResult[]>([]);
 
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            const request = SearchRequest.fromJson(
-                {
-                    query: query,
-                    // author: "edgar ellen poe"
-                }
-            );
-            const response = await runSearch(request);
-            setResults(response.results.map((r: SearchResult) => r.title));
-        } catch (error) {
-            console.error('Error performing search:', error);
-        } finally {
-            setLoading(false);
+    useEffect(() => {
+        // If searchTerm is empty, you might want to clear results or do nothing
+        if (!searchTerm) {
+            setFilteredData([]);
+            return;
         }
-    };
+
+        // Async function inside useEffect
+        const performSearch = async () => {
+            try {
+                const request = SearchRequest.fromJson(
+                    {
+                        query: searchTerm
+                    }
+                );
+                const response = await runSearch(request);
+                setFilteredData(response.results);
+            } catch (error) {
+                console.error('Error performing search:', error);
+                setFilteredData([]);
+            }
+        };
+        performSearch();
+    }, [searchTerm]);
 
     return (
-        <div className="p-8 max-w-md mx-auto">
-            <h1 className="text-2xl font-bold mb-4">Search</h1>
-            <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+            <h1 className="text-2xl font-bold mb-4 text-center">Search &amp; Results</h1>
+
+            {/* Search Bar */}
+            <div className="flex items-center space-x-2 mb-6">
                 <input
                     type="text"
-                    placeholder="Enter your query..."
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                    placeholder="Search..."
+                    className="border border-gray-300 px-4 py-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 disabled:bg-gray-400"
-                >
-                    {loading ? 'Searching...' : 'Search'}
-                </button>
-            </form>
-            <div>
-                <h2 className="text-xl font-semibold mb-2">Results:</h2>
-                {loading ? (
-                    <p className="text-gray-600">Loading...</p>
-                ) : results.length > 0 ? (
-                    <ul className="list-disc list-inside space-y-1">
-                        {results.map((res, i) => (
-                            <li key={i}>{res}</li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="text-gray-600">No results found.</p>
-                )}
             </div>
+
+            {/* Results Table */}
+            <div className="overflow-x-auto">
+                <table className="min-w-full table-auto border-collapse">
+                    <thead>
+                    <tr className="bg-gray-200">
+                        <th className="py-2 px-4 border-b text-left">Author</th>
+                        <th className="py-2 px-4 border-b text-left">Title</th>
+                        <th className="py-2 px-4 border-b text-left">Source</th>
+                        <th className="py-2 px-4 border-b text-left">Matches</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {filteredData.map((item) => (
+                        <tr key={item.id} className="hover:bg-gray-100">
+                            <td className="py-2 px-4 border-b">{item.author}</td>
+                            <td className="py-2 px-4 border-b">{item.title}</td>
+                            <td className="py-2 px-4 border-b">{item.source}</td>
+                            <td className="py-2 px-4 border-b">{item.matches}</td>
+                        </tr>
+                    ))}
+                    {filteredData.length === 0 && (
+                        <tr>
+                            <td colSpan={3} className="text-center py-4">
+                                No results found.
+                            </td>
+                        </tr>
+                    )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Add pagination or other UI below as needed */}
         </div>
     );
-}
+};
+
+export default Search;

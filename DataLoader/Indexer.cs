@@ -6,48 +6,53 @@ namespace DataLoader;
 public class Indexer(Config config, ILogger logger, StateDirectory stateDirectory)
 {
     private const int MaxPageSize = 262143;
+
+    private const int CopyBatchSize = 10;
     
     public async Task Index()
     {
         var queriesSql = new QueriesSql(config.ConnectionString);
         var scrapedTargets = await stateDirectory.GetScrapedTargets();
-        var batches = scrapedTargets.Chunk(config.CopyBatchSize).ToList();
  
-        await queriesSql.TruncateInterim();
         var maxIdResult = await queriesSql.GetMaxId();
-        var currentTextId = maxIdResult?.Max_id ?? 0;
+        var currentTextId = maxIdResult?.Max_id + 1 ?? 1;
         
-        foreach (var batch in batches)
+        var batchArgs = new List<QueriesSql.CopyToInterimArgs>();
+        for (var i = 0; i < scrapedTargets.Count; i++)
         {
-            var copyToInterimArgs = new List<QueriesSql.CopyToInterimArgs>();
-            foreach (var scrapeTarget in batch)
-            {
-                currentTextId++;
-                var text = await File.ReadAllTextAsync(scrapeTarget.TextPath);
-                var pages = SplitTextToPages(text);
-                copyToInterimArgs.AddRange(pages.Select((pageText, i) => 
-                    new QueriesSql.CopyToInterimArgs
-                    {
-                        Text_id = currentTextId,
-                        Source = scrapeTarget.Source,
-                        Source_updated_at = scrapeTarget.UpdatedAt.ToDateTime(),
-                        Author = scrapeTarget.Author,
-                        Title = scrapeTarget.Title,
-                        Release_date = scrapeTarget.ReleaseDate.ToDateTime(),
-                        Page = i + 1,
-                        Text = pageText
-                    }
-                ));
-            }
-            await queriesSql.CopyToInterim(copyToInterimArgs);
-        }
-        logger.LogDebug("Copied {count} records to interim table", scrapedTargets.Count);
+            var scrapeTarget = scrapedTargets[i];
+            var sourceUpdatedAt = scrapeTarget.UpdatedAt?.ToDateTime();
+            var releaseDate = scrapeTarget.ReleaseDate.ToDateTime();
+            var text = await File.ReadAllTextAsync(scrapeTarget.TextPath);
+            var pages = SplitTextToPages(text);
 
-        await queriesSql.InsertMissingTitles(new QueriesSql.InsertMissingTitlesArgs
-        {
-            Certainty = (float)0.95
-        });
-        await queriesSql.InsertMissingPages();
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            for (var j = 0; j < pages.Count; j++)
+                batchArgs.Add(new QueriesSql.CopyToInterimArgs
+                {
+                    Text_id = currentTextId,
+                    Source = scrapeTarget.Source,
+                    Source_updated_at = sourceUpdatedAt,
+                    Author = scrapeTarget.Author,
+                    Title = scrapeTarget.Title,
+                    Release_date = releaseDate,
+                    Page = j + 1,
+                    Text = pages[j]
+                });
+            currentTextId++;
+
+            if (batchArgs.Count < CopyBatchSize && i < scrapedTargets.Count - 1) continue;
+            await InsertTextsBatch(queriesSql, batchArgs);
+            batchArgs = [];
+        }
+    }
+
+    private static async Task InsertTextsBatch(QueriesSql queriesSql, List<QueriesSql.CopyToInterimArgs> batchArgs)
+    {
+        await queriesSql.TruncateInterim();
+        await queriesSql.CopyToInterim(batchArgs);
+        await queriesSql.InsertTitles();
+        await queriesSql.InsertPages();
     }
 
     private static List<string> SplitTextToPages(string text)

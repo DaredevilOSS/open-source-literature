@@ -50,9 +50,10 @@ public class StateDirectory
 
     private static string SanitizeTextFileName(string fileName)
     {
-        return Path
+        var filename = Path
             .GetInvalidFileNameChars()
             .Aggregate(fileName, (current, c) => current.Replace(c, '_'));
+        return filename.Length > 128 ? filename[..128] : filename;
     }
 
     private static string GenerateMessageFilename(string fileName)

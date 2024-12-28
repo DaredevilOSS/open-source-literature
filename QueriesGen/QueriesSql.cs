@@ -12,7 +12,7 @@ namespace QueriesGen;
 public class QueriesSql(string connectionString)
 {
     private const string CopyToInterimSql = "COPY interim_texts (text_id, source, source_updated_at, author, title, release_date, page, text) FROM STDIN (FORMAT BINARY)";
-    public readonly record struct CopyToInterimArgs(int Text_id, string Source, DateTime Source_updated_at, string Author, string Title, DateTime Release_date, int Page, string Text);
+    public readonly record struct CopyToInterimArgs(int Text_id, string Source, DateTime? Source_updated_at, string Author, string Title, DateTime Release_date, int Page, string Text);
     public async Task CopyToInterim(List<CopyToInterimArgs> args)
     {
         {
@@ -27,10 +27,10 @@ public class QueriesSql(string connectionString)
                 await writer.WriteAsync(row.Source, NpgsqlDbType.Varchar);
                 await writer.WriteAsync(row.Source_updated_at, NpgsqlDbType.Date);
                 await writer.WriteAsync(row.Author, NpgsqlDbType.Varchar);
-                await writer.WriteAsync(row.Title, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(row.Title);
                 await writer.WriteAsync(row.Release_date, NpgsqlDbType.Date);
                 await writer.WriteAsync(row.Page, NpgsqlDbType.Integer);
-                await writer.WriteAsync(row.Text, NpgsqlDbType.Text);
+                await writer.WriteAsync(row.Text);
             }
 
             await writer.CompleteAsync();
@@ -68,29 +68,27 @@ public class QueriesSql(string connectionString)
         }
     }
 
-    private const string InsertMissingTitlesSql = "INSERT INTO titles (text_id, source, source_updated_at, author, title, release_date) SELECT  DISTINCT  i . text_id , i . source, source_updated_at, i . author, i . title, i . release_date  FROM  interim_texts  i  WHERE  NOT  EXISTS ( SELECT  1  FROM  titles  w  WHERE  SIMILARITY ( w . title, i . title ) >= @certainty :: float8 ) "; 
-    public readonly record struct InsertMissingTitlesArgs(float Certainty);
-    public async Task InsertMissingTitles(InsertMissingTitlesArgs args)
+    private const string InsertTitlesSql = "INSERT INTO titles (text_id, source, source_updated_at, author, title, release_date) SELECT  DISTINCT  text_id , source, source_updated_at, author, title, release_date FROM  interim_texts  ";  
+    public async Task InsertTitles()
     {
         {
             await using var connection = NpgsqlDataSource.Create(connectionString);
-            await using var command = connection.CreateCommand(InsertMissingTitlesSql);
-            command.Parameters.AddWithValue("@certainty", args.Certainty);
+            await using var command = connection.CreateCommand(InsertTitlesSql);
             await command.ExecuteScalarAsync();
         }
     }
 
-    private const string InsertMissingPagesSql = "INSERT INTO pages (text_id, page, text) SELECT  i . text_id , i . page, i . text  FROM  interim_texts  i  WHERE  NOT  EXISTS ( SELECT  1  FROM  pages  p  WHERE  p . text_id  =  i . text_id  AND  p . page  =  i . page ) AND  EXISTS ( SELECT  1  FROM  titles  t  WHERE  t . text_id  =  i . text_id ) "; 
-    public async Task InsertMissingPages()
+    private const string InsertPagesSql = "INSERT INTO pages (text_id, page, text) SELECT  text_id , page, text FROM  interim_texts  ";  
+    public async Task InsertPages()
     {
         {
             await using var connection = NpgsqlDataSource.Create(connectionString);
-            await using var command = connection.CreateCommand(InsertMissingPagesSql);
+            await using var command = connection.CreateCommand(InsertPagesSql);
             await command.ExecuteScalarAsync();
         }
     }
 
-    private const string SearchInTextsSql = "SELECT t.text_id, source, author, title, TS_HEADLINE ( 'english' , text, TO_TSQUERY (@query ), @options ) :: text  AS  matches  FROM  titles  t  JOIN  pages  p  ON  t . text_id  =  p . text_id  WHERE ( text @@ TO_TSQUERY ( @query ) OR  text2 @@ TO_TSQUERY ( @query ) ) LIMIT  @limit  "; 
+    private const string SearchInTextsSql = "SELECT t.text_id, source, author, title, TS_HEADLINE ( 'english' , text, TO_TSQUERY (@query ), @options ) :: text  AS  matches  FROM  titles  t  JOIN ( SELECT  text_id, page, text FROM  pages  WHERE  trigrams @@ TO_TSQUERY ( @query ) ) p  ON  t . text_id  =  p . text_id  LIMIT  @limit  ";  
     public readonly record struct SearchInTextsRow(int Text_id, string Source, string Author, string Title, string Matches);
     public readonly record struct SearchInTextsArgs(string Query, string Options, int Limit);
     public async Task<List<SearchInTextsRow>> SearchInTexts(SearchInTextsArgs args)

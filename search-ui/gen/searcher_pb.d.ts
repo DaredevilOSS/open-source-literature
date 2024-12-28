@@ -40,24 +40,34 @@ export declare class SearchRequest extends Message<SearchRequest> {
  */
 export declare class SearchResult extends Message<SearchResult> {
   /**
-   * @generated from field: string author = 1;
+   * @generated from field: int32 id = 1;
+   */
+  id: number;
+
+  /**
+   * @generated from field: int32 text_id = 2;
+   */
+  textId: number;
+
+  /**
+   * @generated from field: string source = 3;
+   */
+  source: string;
+
+  /**
+   * @generated from field: string author = 4;
    */
   author: string;
 
   /**
-   * @generated from field: string title = 2;
+   * @generated from field: string title = 5;
    */
   title: string;
 
   /**
-   * @generated from field: string url = 3;
+   * @generated from field: string matches = 6;
    */
-  url: string;
-
-  /**
-   * @generated from field: repeated string matches = 4;
-   */
-  matches: string[];
+  matches: string;
 
   constructor(data?: PartialMessage<SearchResult>);
 

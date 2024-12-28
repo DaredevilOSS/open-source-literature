@@ -16,7 +16,7 @@ public class SearchService(ILogger<SearchService> logger) : Searcher.SearcherBas
     {
         var results = string.IsNullOrEmpty(request.Author)
             ? await SearchAllAuthors(request.Query)
-            : await SearchSpecificAuthor(request.Query, request.Author);
+            : await SearchSpecificAuthors(request.Query, request.Author);
         logger.LogInformation("Found {cnt} matching documents", results.Count);
         return new SearchResponse { Results = { results } };
     }
@@ -30,8 +30,11 @@ public class SearchService(ILogger<SearchService> logger) : Searcher.SearcherBas
             Options = PgHeadlineOptions,
         };
         var results = await QueriesSql.SearchInTexts(queryArgs);
+        var i = 0;
         return results.Select(r => new SearchResult
         {
+            Id = ++i,
+            TextId = r.Text_id,
             Author = r.Author,
             Title = r.Title,
             Source = r.Source,
@@ -39,7 +42,7 @@ public class SearchService(ILogger<SearchService> logger) : Searcher.SearcherBas
         }).ToList();
     }
     
-    private static Task<List<SearchResult>> SearchSpecificAuthor(string query, string author)
+    private static Task<List<SearchResult>> SearchSpecificAuthors(string query, string author)
     {
         return SearchAllAuthors(query); // TODO fix
     }

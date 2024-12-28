@@ -50,11 +50,11 @@ internal static class ScrapeTargetExtensions
     }
 }
 
-public partial class GutenbergProject(Config config, ILogger logger, StateDirectory stateDirectory) : IScraper
+public partial class GutenbergProject(ILogger logger, StateDirectory stateDirectory) : IScraper
 {
     private const string UrlTemplate = "https://www.gutenberg.org/cache/epub/{idx}/pg{idx}-images.html";
 
-    private int MaxTargets { get; } = EnvHelper.GetIntEnvOrDefault("MAX_GUTENBERG_TARGETS", 10);
+    private int MaxTargets { get; } = EnvHelper.GetIntEnvOrDefault("MAX_GUTENBERG_TARGETS", 2000);
 
     private static Dictionary<ScrapeField, HashSet<string>> RequiredFields { get; } = new() {
         { ScrapeField.Title, ["title"] },
@@ -118,7 +118,7 @@ public partial class GutenbergProject(Config config, ILogger logger, StateDirect
             }
         }
         
-        var (startIndex, endIndex) = FindTextStartAndEnd(scrapeTarget, lines);
+        var (startIndex, endIndex) = FindTextStartAndEnd(lines);
         if (startIndex < 0 || endIndex <= startIndex || endIndex > lines.Length) return;
         
         var textLines = lines.Skip(startIndex).Take(endIndex - startIndex);
@@ -126,7 +126,7 @@ public partial class GutenbergProject(Config config, ILogger logger, StateDirect
         await stateDirectory.Persist(scrapeTarget, fullText);
     }
 
-    private static (int , int) FindTextStartAndEnd(ScrapeTarget scrapeTarget, string[] lines)
+    private static (int , int) FindTextStartAndEnd(string[] lines)
     {
         var startRegex = StartTextRegex();
         var endRegex = EndTextRegex();

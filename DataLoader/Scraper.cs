@@ -7,7 +7,7 @@ public class Scraper(Config config, ILogger logger, StateDirectory stateDirector
 {
     private List<IScraper> Scrapers { get; } =
     [
-        new GutenbergProject(config, logger, stateDirectory)
+        new GutenbergProject(logger, stateDirectory)
     ];
     
     public async Task Scrape()
